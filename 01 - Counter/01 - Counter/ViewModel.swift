@@ -8,10 +8,21 @@
 
 import Foundation
 
-class ViewModel : NSObject {
-    dynamic var counterText: String!
+class ViewModel: NSObject {
+    dynamic var counterText: String {
+        get {
+            return String(model.counter)
+        }
+    }
+
+    dynamic var isIncreaseBtnEnabled: Bool {
+        get {
+            return (model.counter < 9)
+        }
+    }
+
     var model: Model!
-    
+
     override init() {
         super.init()
         
@@ -20,26 +31,28 @@ class ViewModel : NSObject {
             forKeyPath: "counter",
             options: .new,
             context: nil)
-        
-        counterText = String(model.counter)
     }
-    
+
     deinit {
         model.removeObserver(self, forKeyPath: "counter")
     }
-    
+
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "counter" {
-            if let counter = change?[NSKeyValueChangeKey.newKey] as? Int {
-                counterText = String(counter)
+            if ((change?[NSKeyValueChangeKey.newKey] as? Int) != nil) {
+                self.willChangeValue(forKey: "counterText")
+                self.willChangeValue(forKey: "isIncreaseBtnEnabled")
+
+                self.didChangeValue(forKey: "counterText")
+                self.didChangeValue(forKey: "isIncreaseBtnEnabled")
             }
         }
     }
-    
+
     func increaseButtonDidTouch() {
         model.increase()
     }
-    
+
     func resetButtonDidTouch() {
         model.reset()
     }

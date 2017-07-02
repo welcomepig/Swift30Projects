@@ -9,7 +9,26 @@
 import Foundation
 
 class Model : NSObject {
-    dynamic var counter = 0
+    static var counterMax: Int = 10
+
+    private var _counter: Int = 0 {
+        willSet (_newCounter) {
+            if _newCounter == Model.counterMax - 1 {
+                print("counter's maximum")
+            }
+        }
+    }
+
+    dynamic var counter: Int {
+        get {
+            return _counter
+        }
+        set (newCounter) {
+            if newCounter < Model.counterMax {
+                _counter = newCounter
+            }
+        }
+    }
     
     func increase() {
         counter += 1

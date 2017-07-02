@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var resetBtn: UIButton!
     
     var viewModel: ViewModel!
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -24,10 +24,15 @@ class ViewController: UIViewController {
                               forKeyPath: "counterText",
                               options: .new,
                               context: nil)
+        viewModel.addObserver(self,
+                              forKeyPath: "isIncreaseBtnEnabled",
+                              options: .new,
+                              context: nil)
     }
-    
+
     deinit {
         viewModel.removeObserver(self, forKeyPath: "counterText")
+        viewModel.removeObserver(self, forKeyPath: "isIncreaseBtnEnabled")
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -35,13 +40,17 @@ class ViewController: UIViewController {
             if let counterText = change?[NSKeyValueChangeKey.newKey] as? String {
                 self.counterLabel.text = counterText
             }
+        } else if keyPath == "isIncreaseBtnEnabled" {
+            if let isEnabled = change?[NSKeyValueChangeKey.newKey] as? Bool {
+                self.increaseBtn.isEnabled = isEnabled
+            }
         }
     }
-    
+
     @IBAction func increaseButtonDidTouch(sender: AnyObject) {
         viewModel.increaseButtonDidTouch()
     }
-    
+
     @IBAction func resetButtonDidTouch(sender: AnyObject) {
         viewModel.resetButtonDidTouch()
     }
